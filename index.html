@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Blips</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+  <header>
+    <h1>Blips</h1>
+    <nav aria-label="Playback and composition">
+      <div class="toolbar-tools">
+      <button id="play" aria-label="Play" aria-keyshortcuts="Space" title="Play / pause (Space)">▶</button>
+      <button id="draw" aria-label="Draw" aria-pressed="false" title="Pencil — pause and draw cells">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15zM4 15l4 4"/></svg>
+      </button>
+      <button id="random" aria-label="Random" title="Randomize every cell independently">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 7h.01M17 7h.01M12 12h.01M7 17h.01M17 17h.01" stroke-width="3"/></svg><span>Random</span>
+      </button>
+      <button id="clear" aria-label="Clear grid" title="Clear grid">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>
+      </button>
+      </div>
+      <div class="toolbar-settings">
+        <div class="speed-control">
+          <label for="speed">Speed</label>
+          <input id="speed" type="range" min="0" max="3" step="1" value="1" aria-valuetext="Medium, 90 BPM">
+          <div class="speed-labels" aria-hidden="true"><span>Slow</span><span class="active">Medium</span><span>Fast</span><span>Turbo</span></div>
+        </div>
+        <div class="sound-control" role="group" aria-label="Sound">
+          <span class="control-label">Sound</span>
+          <div class="segmented sound-toggle">
+            <button id="trigger" aria-pressed="true" title="Separate notes on each step; density controls volume">Stabby</button>
+            <button id="swell" aria-pressed="false" title="Hold notes across adjacent active steps with smooth volume changes">Smooth</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <main><canvas id="grid" tabindex="0" aria-label="Conway grid. Select the pencil to draw cells. Space toggles playback."></canvas></main>
+  <footer><span id="hint">Select pencil to draw · Space to play</span><span id="iteration">Iteration 1</span><button id="about">About</button></footer>
+  <dialog id="about-dialog">
+    <form method="dialog"><button aria-label="Close About">×</button></form>
+    <h2>Blips</h2>
+    <p>A living instrument. Conway’s Game of Life unfolds on 512 × 512 cells. Invisible 32 × 32 music regions turn their density into sound.</p>
+    <p>Play scans left to right in sixteenth notes. Stabby articulates each step; Smooth joins neighboring active steps in the same pitch row. Edges wrap around.</p>
+    <p>Select the pencil to pause and draw or erase cells. Random gives every cell an independent 50% chance of life. The trash button clears the grid. Space toggles playback.</p>
+  </dialog>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

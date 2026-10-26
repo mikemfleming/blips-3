@@ -1,0 +1,22 @@
+<!doctype html><meta charset="utf-8"><title>Blips audio regression</title><pre id="results">Rendering audio tests…</pre><script type="module">
+import {AudioEngine,createAudioGraph} from '../src/audio.js';
+window.audioTests=(async()=>{
+ const results=[];
+ for(const mode of ['trigger','swell'])for(const peak of [1,256]){
+  const ctx=new OfflineAudioContext(2,48000*4,48000),engine=new AudioEngine();
+  engine.ctx=ctx;Object.assign(engine,createAudioGraph(ctx));engine.mode=mode;engine.peak=peak;engine.bpm=240;
+  // Sustained maximum polyphony, followed by alternating dense/empty columns.
+  engine.density.fill(256);
+  for(let i=0;i<56;i++){
+   if(i>=24)for(let row=0;row<32;row++)engine.density[row*32+i%32]=i%2?0:256;
+   engine.scheduleStep(.04+i*.0625,i%32);
+  }
+  const buffer=await ctx.startRendering(),samples=buffer.getChannelData(0);
+  let max=0,clipped=0,delta=0;
+  for(let i=0;i<samples.length;i++){max=Math.max(max,Math.abs(samples[i]));if(Math.abs(samples[i])>=1)clipped++;if(i)delta=Math.max(delta,Math.abs(samples[i]-samples[i-1]));}
+  if(clipped||max>=.8||delta>=.1)throw Error(JSON.stringify({mode,peak,max,clipped,delta}));
+  results.push({mode,threshold:peak,peak:max,clipped,maxSampleChange:delta});
+ }
+ document.getElementById('results').textContent=JSON.stringify(results,null,2);return results;
+})();
+</script>

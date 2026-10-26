@@ -1,0 +1,1 @@
+import {Life} from '../src/life.js';const l=new Life();l.random();for(let i=0;i<20;i++)l.step();const runs=[];for(let i=0;i<200;i++){const start=performance.now();l.step();l.density();runs.push(performance.now()-start);}runs.sort((a,b)=>a-b);console.log(JSON.stringify({grid:'512x512',samples:200,medianMs:runs[100],p95Ms:runs[190],stepBudgetAt240BpmMs:62.5},null,2));
