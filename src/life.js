@@ -1,8 +1,13 @@
+export const PENCIL_LIFETIME=16;
+
 export class Life {
- constructor(size=512){this.size=size;this.cells=new Uint8Array(size*size);this.next=new Uint8Array(size*size);this.generation=0;}
- step(){const n=this.size,a=this.cells,b=this.next;for(let y=0;y<n;y++){const up=((y+n-1)%n)*n,down=((y+1)%n)*n,row=y*n;for(let x=0;x<n;x++){const l=(x+n-1)%n,r=(x+1)%n;const count=a[up+l]+a[up+x]+a[up+r]+a[row+l]+a[row+r]+a[down+l]+a[down+x]+a[down+r];b[row+x]=+(count===3||(count===2&&a[row+x]===1));}}this.cells=b;this.next=a;this.generation++;}
+ constructor(size=512){this.size=size;this.cells=new Uint8Array(size*size);this.next=new Uint8Array(size*size);this.protection=new Uint16Array(size*size);this.generation=0;}
+ step(){const n=this.size,a=this.cells,b=this.next;for(let y=0;y<n;y++){const up=((y+n-1)%n)*n,down=((y+1)%n)*n,row=y*n;for(let x=0;x<n;x++){const index=row+x;if(this.protection[index]>0){b[index]=1;this.protection[index]--;continue;}const l=(x+n-1)%n,r=(x+1)%n;const count=a[up+l]+a[up+x]+a[up+r]+a[row+l]+a[row+r]+a[down+l]+a[down+x]+a[down+r];b[row+x]=+(count===3||(count===2&&a[row+x]===1));}}this.cells=b;this.next=a;this.generation++;}
  density(){const counts=new Uint16Array(1024),s=this.size/32;for(let y=0;y<this.size;y++)for(let x=0;x<this.size;x++)counts[Math.floor(y/s)*32+Math.floor(x/s)]+=this.cells[y*this.size+x];return counts;}
- random(){for(let i=0;i<this.cells.length;i++)this.cells[i]=+(Math.random()<.5);this.generation=0;}
+ paint(points,value,iterations=PENCIL_LIFETIME){const lifetime=Number.isFinite(iterations)?Math.max(0,Math.min(1000,Math.floor(iterations))):0;for(const [x,y] of points)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<this.size&&yy>=0&&yy<this.size){const i=yy*this.size+xx;this.cells[i]=value;this.protection[i]=value?lifetime:0;}}}
+ clear(){this.cells.fill(0);this.next.fill(0);this.protection.fill(0);this.generation=0;}
+ loadText(cells,overlay=false,lifetimes=null){if(!overlay)this.clear();for(let i=0;i<this.cells.length;i++)if(cells[i]){this.cells[i]=1;this.protection[i]=lifetimes instanceof Uint16Array&&lifetimes.length===cells.length?lifetimes[i]:PENCIL_LIFETIME;}}
+ random(random=Math.random,probability=.5){this.protection.fill(0);for(let i=0;i<this.cells.length;i++)this.cells[i]=+(random()<probability);this.generation=0;}
  stamp(rows,x,y){rows.forEach((row,dy)=>[...row].forEach((c,dx)=>{if(c==='O')this.cells[((y+dy+this.size)%this.size)*this.size+(x+dx+this.size)%this.size]=1;}));}
 }
 export const patterns={Glider:['.O.','..O','OOO'],Blinker:['OOO'],Toad:['.OOO','OOO.'],Beacon:['OO..','OO..','..OO','..OO'],Block:['OO','OO'],Beehive:['.OO.','O..O','.OO.']};

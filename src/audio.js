@@ -3,43 +3,33 @@ export const pitches = Array.from({ length: 32 }, (_, i) =>
   [84,81,79,76,74,72,69,67,64,62,60,57,55,52,50,48][Math.floor(i / 2)]);
 export const level = (count, peak) => count === 0 ? 0 : .035 + .965 * Math.min(1, count / peak);
 export const MIX_GAIN = .018;
-export const ECHO_WET = .25;
-export const ECHO_FEEDBACK = .3;
-
+export const STEREO_WIDTH=.66;
+// Fixed Blips 2 spatial model at 66% of its full x=-2..2 scan.
+export const spatialX=column=>column<0?0:(4*Math.min(31,column)/31-2)*STEREO_WIDTH;
 export function createAudioGraph(ctx) {
-  const master = ctx.createGain();
-  // Budget for all 32 full-scale voices AND the echo tail. A compressor is
-  // not a hard limiter, so leave headroom before the signal reaches output.
-  master.gain.value = MIX_GAIN;
-  const tone = ctx.createBiquadFilter();
-  tone.type = 'lowpass';
-  tone.frequency.value = 3500;
-  tone.Q.value = .5;
-  master.connect(tone);
+  const master=ctx.createGain();master.gain.value=MIX_GAIN;
+  const spatial=ctx.createPanner();spatial.panningModel='HRTF';spatial.rolloffFactor=0;
+  spatial.positionX.value=0;spatial.positionY.value=0;spatial.positionZ.value=-1.5;
+  const direct=ctx.createGain(),positioned=ctx.createGain();
+  direct.gain.value=1-STEREO_WIDTH;positioned.gain.value=STEREO_WIDTH;
+  const tone=ctx.createBiquadFilter();tone.type='lowpass';tone.frequency.value=3500;tone.Q.value=.5;
+  // Preserve the former 66% Width setting, without any experimental processors.
+  master.connect(direct);direct.connect(tone);
+  master.connect(spatial);spatial.connect(positioned);positioned.connect(tone);
   tone.connect(ctx.destination);
-  const delay = ctx.createDelay();
-  delay.delayTime.value = .05;
-  const wet = ctx.createGain();
-  const feedback = ctx.createGain();
-  wet.gain.value = ECHO_WET;
-  feedback.gain.value = ECHO_FEEDBACK;
-  master.connect(delay);
-  delay.connect(wet);
-  wet.connect(tone);
-  delay.connect(feedback);
-  feedback.connect(delay);
-  const voices = pitches.map(midi => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.value = 440 * 2 ** ((midi - 69) / 12);
-    gain.gain.value = 0;
-    osc.connect(gain);
-    gain.connect(master);
-    osc.start();
-    return gain.gain;
+  const spatialController={
+    position(column,time){spatial.positionX.setTargetAtTime(spatialX(column),time,.015);},
+    center(){
+      spatial.positionX.cancelAndHoldAtTime(ctx.currentTime);
+      spatial.positionX.setTargetAtTime(0,ctx.currentTime,.03);
+    },
+  };
+  const voices=pitches.map(midi=>{
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type='triangle';osc.frequency.value=440*2**((midi-69)/12);gain.gain.value=0;
+    osc.connect(gain);gain.connect(master);osc.start();return gain.gain;
   });
-  return { master, voices };
+  return {master,voices,spatialController};
 }
 
 export class AudioEngine {
@@ -65,6 +55,7 @@ export class AudioEngine {
     this.timer = setInterval(() => this.schedule(), 20);
   }
   scheduleStep(t, col) {
+    this.spatialController?.position(col,t);
     const step = 15 / this.bpm;
     this.voices.forEach((gain, row) => {
       const value = level(this.density[row * 32 + col], this.peak);
@@ -110,6 +101,7 @@ export class AudioEngine {
     this.running = false;
     clearInterval(this.timer);
     this.events = [];
+    this.spatialController?.center();
     this.fade();
   }
   setMode(mode) {

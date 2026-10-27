@@ -33,14 +33,11 @@ button svg { width: 1.15rem; height: 1.15rem; flex-shrink: 0; }
 .toolbar-tools button { min-width: 2.75rem; }
 #draw[aria-pressed="true"] { color: #702aae; background: #eee0f7; }
 .toolbar-settings { display: contents; }
-.speed-control { width: 11rem; flex: 0 1 11rem; min-width: 0; }
+.speed-control { flex: 0 0 auto; width: auto; }
+.speed-icon { font-size: 1rem; }
+.speed-name { font-size: inherit; }
 .sound-control, .toolbar-tools { flex-shrink: 0; }
-.speed-control label, .control-label { display: block; color: #666; font-size: .7rem; margin-bottom: .2rem; }
-.speed-control input { display: block; width: 100%; margin: 0; min-height: 2rem; accent-color: #9d40d7; cursor: pointer; }
-.speed-labels { display: grid; grid-template-columns: repeat(4, 1fr); font-size: .6rem; color: #777; text-align: center; }
-.speed-labels span:first-child { text-align: left; }
-.speed-labels span:last-child { text-align: right; }
-.speed-labels .active { color: #702aae; font-weight: 700; }
+.control-label { display: block; color: #666; font-size: .7rem; margin-bottom: .2rem; }
 .segmented { display: flex; background: #eee; padding: .2rem; border-radius: .4rem; }
 .segmented button { flex: 1; font-size: .85rem; }
 .segmented [aria-pressed="true"] { background: white; box-shadow: 0 1px 4px #0001; }
@@ -64,18 +61,17 @@ dialog h2 { margin-top: 0; }
   .toolbar-tools { gap: 0; }
   .toolbar-tools button { width: 2rem; min-width: 2rem; padding: 0; }
   #random span { display: none; }
-  .speed-control { flex: 0 1 6rem; }
+  .speed-control { width: 5rem; flex: 0 0 5rem; }
+  .speed-name { display: none; }
+  .speed-toggle button { padding-inline: .15rem; }
   .sound-control { width: 7rem; }
   .segmented button { font-size: .7rem; padding-inline: .2rem; min-width: 0; }
-  .speed-control input { min-height: 2.75rem; }
-  .speed-labels { font-size: 0; line-height: 3px; }
-  .speed-labels span::before { content: ''; display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: #bbb; }
-  .speed-labels .active::before { background: #702aae; }
 }
 @container (max-width: 340px) {
   .toolbar-tools button { width: 1.75rem; min-width: 1.75rem; }
   .toolbar-tools svg { width: 1rem; height: 1rem; }
-  .sound-control { width: 6.75rem; }
+  .speed-control { width: 4rem; flex-basis: 4rem; }
+  .sound-control { width: 6.5rem; }
   .segmented button { font-size: .65rem; padding-inline: .15rem; }
 }
 @media (max-width: 600px), (max-height: 500px) and (max-width: 960px) {
@@ -89,3 +85,6 @@ dialog h2 { margin-top: 0; }
   #iteration { margin-left: 0; }
   #about { margin-left: auto; }
 }
+
+
+@media (max-width: 360px) { nav { gap: .1rem; } }
