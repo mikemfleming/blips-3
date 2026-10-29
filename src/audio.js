@@ -4,8 +4,13 @@ export const pitches = Array.from({ length: 32 }, (_, i) =>
 export const level = (count, peak) => count === 0 ? 0 : .035 + .965 * Math.min(1, count / peak);
 export const MIX_GAIN = .018;
 export const STEREO_WIDTH=.66;
-// Fixed Blips 2 spatial model at 66% of its full x=-2..2 scan.
-export const spatialX=column=>column<0?0:(4*Math.min(31,column)/31-2)*STEREO_WIDTH;
+// Ease the first/last four column intervals to center so both ends meet.
+export const spatialX=column=>{
+ if(column<0)return 0;
+ const col=Math.min(31,column),edge=Math.min(1,Math.min(col,31-col)/4);
+ const taper=edge*edge*(3-2*edge);
+ return (4*col/31-2)*STEREO_WIDTH*taper;
+};
 export function createAudioGraph(ctx) {
   const master=ctx.createGain();master.gain.value=MIX_GAIN;
   const spatial=ctx.createPanner();spatial.panningModel='HRTF';spatial.rolloffFactor=0;

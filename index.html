@@ -45,11 +45,20 @@
   <footer><span id="hint">Select pencil to draw · Space to play</span><span id="iteration">Iteration 1</span><button id="about">About</button></footer>
   <dialog id="about-dialog">
     <form method="dialog"><button aria-label="Close About">×</button></form>
-    <h2>Blips</h2>
-    <p>A living instrument. Conway’s Game of Life unfolds on a rectangular grid of square cells that fits your screen. Invisible 32 × 32 music regions turn their density into sound.</p>
-    <p>Play scans left to right in sixteenth notes. Stabby articulates each step; Smooth joins neighboring active steps in the same pitch row. Stereo follows the scanner at a fixed 66% width. Edges wrap around. Tortoise is 30 BPM; Hare is 90 BPM.</p>
-    <p>Select the pencil to draw or erase with a 3-cell-wide stroke, even while playing. Drawn cells stay alive for 16 Conway generations, then resume normal rules. Erasing and clearing remove them immediately. Random gives every cell an independent 50% chance of life. The trash button clears the grid. Space toggles playback.</p>
-    <p>The playhead moves every sixteenth note. Conway evolves independently at roughly the same interval; the canvas shows each completed generation on the next screen refresh. The rainbow redraws at display refresh while playing. Generations do not wait for the end of a sweep.</p>
+    <h2>About Blips</h2>
+    <p>Blips turns a living pattern of cells into music. Draw something, scatter some randomness, or start with a few words, then listen as the pattern changes.</p>
+    <h3>A simple game of life</h3>
+    <p>Conway’s Game of Life is a set of rules, rather than a game you win. Every cell has eight neighbors. A living cell survives with two or three living neighbors; otherwise it dies. An empty cell becomes alive with exactly three living neighbors. All cells change together each generation, creating patterns that settle, pulse, travel, or disappear. The grid wraps at its edges.</p>
+    <h3>How the cells become music</h3>
+    <p>Behind the fine cells is an invisible grid of 32 columns and 32 pitch rows. The rainbow scanner reads one column at a time, from left to right. Living cells in each region sound a note: higher rows make higher notes, lower rows make lower notes, and more living cells make the note louder, up to a limit. The sound moves from left to right with the scanner.</p>
+    <p>Slow and Fast change both the scanner’s pace and how quickly life evolves. The scanner and Conway run independently at roughly the same interval, so the pattern changes throughout a sweep. Leaving the page pauses the composition; press Play when you return.</p>
+    <h3>Stabby or Smooth</h3>
+    <p><strong>Stabby</strong> plays a separate, short note at each scanner step. <strong>Smooth</strong> connects notes across neighboring active regions in the same pitch row, gently changing their volume and fading when the scanner reaches an empty region. Smooth is the default.</p>
+    <h3>Draw while you listen</h3>
+    <p>Select the pencil, then drag your mouse or finger across the grid. Starting a stroke on an empty cell draws; starting on a living cell erases. The brush is three cells wide and works while playing or paused. Drawn cells stay alive for 16 generations before returning to the usual rules. Random scatters fresh cells; the trash button clears the grid. Press Space or use Play to start and pause.</p>
+    <h3>Start with a message</h3>
+    <p>Add <code>?text=Hello+world</code> to the page address to plant centered words as cells. Use <code>+</code> for spaces and <code>%0A</code> for a new line. Letters near the end stay protected longer than letters at the beginning, letting the message gradually unravel.</p>
+    <p>Try <a href="?text=Hello+world&amp;density=10">a message with a little randomness</a>: <code>?text=Hello+world&amp;density=10</code> adds a random background with a 10% chance of life per cell. Copy the full address to share your starting message and settings; each visit gets a fresh random background.</p>
   </dialog>
   <script type="module" src="src/app.js"></script>
 </body>

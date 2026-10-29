@@ -91,3 +91,5 @@ Desktop/mobile checks cover text-only, density-only, combined initialization, ce
 ## October 28 interface update
 
 The grid fills the viewport with square cells in a responsive rectangular simulation. Resizing preserves overlapping cells and their protection, centered in the new dimensions. Music still uses 32 × 32 regions. Playback and Conway pause when the page is hidden, and require Play on return. The fixed toolbar fits its labeled Slow (30 BPM), Fast (90 BPM), Stabby, and Smooth controls; Smooth is the default. A black BLIIII…PS title fills the toolbar width and inverts over live cells.
+
+Stereo now eases toward center over the first and last four column intervals. Columns 0 and 31 both sit at center, softening the wrap without reversing the sequence or fading note volume.
