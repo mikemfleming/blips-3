@@ -75,18 +75,26 @@ document.addEventListener('keydown',e=>{
  const typing=e.target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"]),dialog[open]');
  if(e.code==='Space'&&!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();if(!e.repeat)$('play').click();}
 });
-function updateHint(){$('hint').textContent=editing?(playing?'Draw live · Space to pause':'Drag cells to draw · Space to play'):(playing?'Select pencil to draw live · Space to pause':'Select pencil to draw · Space to play');}
-function setEditing(value){editing=value;drawing=false;last=null;$('draw').setAttribute('aria-pressed',String(value));canvas.classList.toggle('editable',value);updateHint();}
+function setEditing(value){editing=value;drawing=false;last=null;$('draw').setAttribute('aria-pressed',String(value));canvas.classList.toggle('editable',value);}
 function pause(){audio.pause();playing=false;send('pause');column=-1;dirty=true;updatePlayback();}
-function updatePlayback(){$('play').textContent=playing?'Ⅱ':'▶';$('play').setAttribute('aria-label',playing?'Pause':'Play');updateHint();}
-let starting=false;
+function updatePlayback(){$('play').textContent=playing?'Ⅱ':'▶';$('play').setAttribute('aria-label',playing?'Pause':'Play');}
+let starting=false,soundReminderShown=false;
+function showSoundReminder(){
+ if(soundReminderShown)return;
+ soundReminderShown=true;
+ const reminder=$('sound-reminder');
+ reminder.textContent='Sound on. Headphones welcome.';
+ reminder.classList.add('visible');
+ setTimeout(()=>{reminder.classList.remove('visible');reminder.textContent='';},3500);
+}
 // Stop both clocks when the page is hidden; returning requires an explicit Play.
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&(playing||starting))pause();});
 window.addEventListener('pagehide',()=>{if(playing||starting)pause();});
-$('play').onclick=async()=>{if(starting)return;try{if(!playing){starting=true;await audio.play();if(document.hidden){pause();return;}playing=true;send('play');updatePlayback();}else pause();}catch(error){$('hint').textContent=`Audio could not start: ${error.message}`;}finally{starting=false;}};
+$('play').onclick=async()=>{if(starting)return;try{if(!playing){starting=true;await audio.play();if(document.hidden){pause();return;}playing=true;send('play');updatePlayback();showSoundReminder();}else pause();}catch(error){$('hint').textContent=`Audio could not start: ${error.message}`;}finally{starting=false;}};
 $('random').onclick=()=>send('random');
 $('clear').onclick=()=>send('clear');
 $('draw').onclick=()=>setEditing(!editing);
+setEditing(true);
 const speeds={tortoise:30,hare:90};
 function setSpeed(name){
  audio.bpm=speeds[name];
@@ -103,4 +111,4 @@ for(const mode of ['trigger','swell'])$(mode).onclick=()=>setSound(mode);
 setSound(startup.sound==='smooth'?'swell':'trigger');
 function point(e){const r=canvas.getBoundingClientRect();return [Math.max(0,Math.min(gridWidth-1,Math.floor((e.clientX-r.left)/scale))),Math.max(0,Math.min(gridHeight-1,Math.floor((e.clientY-r.top)/scale)))];}
 function paint(p){const points=[];if(last){const dx=p[0]-last[0],dy=p[1]-last[1],steps=Math.max(Math.abs(dx),Math.abs(dy));for(let i=0;i<=steps;i++)points.push([Math.round(last[0]+dx*i/(steps||1)),Math.round(last[1]+dy*i/(steps||1))]);}else points.push(p);send('paint',{points,value:paintValue});last=p;}
-canvas.onpointerdown=e=>{if(e.button!==0)return;if(!editing)return;const p=point(e);canvas.setPointerCapture(e.pointerId);drawing=true;last=null;paintValue=1-cells[p[1]*gridWidth+p[0]];paint(p);};canvas.onpointermove=e=>{if(drawing)paint(point(e));};canvas.onpointerup=canvas.onpointercancel=()=>{drawing=false;last=null;};$('about').onclick=()=>$('about-dialog').showModal();
+canvas.onpointerdown=e=>{if(e.button!==0)return;if(!editing)return;const p=point(e);canvas.setPointerCapture(e.pointerId);drawing=true;last=null;send('strokeStart');paintValue=1-cells[p[1]*gridWidth+p[0]];paint(p);};canvas.onpointermove=e=>{if(drawing)paint(point(e));};canvas.onpointerup=canvas.onpointercancel=()=>{drawing=false;last=null;};$('about').onclick=()=>$('about-dialog').showModal();

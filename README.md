@@ -22,7 +22,7 @@ npm run benchmark
 - Play/pause or Space starts and stops both the sequencer and Conway simulation. Space leaves sliders, text entry, and the About dialog alone.
 - Speed is a direct Tortoise / Hare toggle: Tortoise (30 BPM) or Hare (90 BPM, default). Four sequencer steps per beat.
 - Pencil: draw while playing or paused with a 3 × 3 fine-cell brush. Drawn cells stay alive for the next 16 completed Conway generations, then return to normal Conway rules. They are not forcibly killed after protection expires. Painting over a cell refreshes protection; erasing, clearing, and randomizing remove protection immediately. Pausing does not consume generations. Playback keeps the pencil selected; Escape deselects it.
-- Random assigns each of the 262,144 cells an independent 50% chance of life.
+- Random assigns each cell an independent 5% chance of life.
 - Clear (trash button) empties the grid and resets its iteration count, whether playing or paused.
 - Sound is a Stabby / Smooth toggle directly in the toolbar, defaulting to Smooth. Stabby articulates every step; Smooth holds each pitch-row voice across adjacent active columns, interpolates volume, and fades on an empty region.
 - Volume follows density automatically, with a fixed full-volume threshold of 32 cells per region.
@@ -84,7 +84,7 @@ Text is centered by actual ink bounds. Spaces accept `%20` or `+`; `%0A` starts 
 
 With text alone, the rest of the grid starts empty. With density alone, the grid starts random at that density. Together, protected text is overlaid onto an unprotected random background. Empty or whitespace-only text contributes no cells, but does not suppress density. When neither text nor density is present, the original organism starter remains.
 
-Seed support has been removed; old `seed` parameters are ignored. Random continues to generate a fresh grid with 50% live-cell probability. Unknown speed/sound values use their defaults, and toolbar changes can override the initial settings.
+Seed support has been removed; old `seed` parameters are ignored. Random continues to generate a fresh grid with 5% live-cell probability. Unknown speed/sound values use their defaults, and toolbar changes can override the initial settings.
 
 Desktop/mobile checks cover text-only, density-only, combined initialization, centered text, fresh backgrounds, density endpoints, and character-specific protection/expiry through their assigned generation counts. Unit checks cover parsing, binary cell extraction, probability selection, and preservation of background cells when text is overlaid.
 
@@ -93,3 +93,5 @@ Desktop/mobile checks cover text-only, density-only, combined initialization, ce
 The grid fills the viewport with square cells in a responsive rectangular simulation. Resizing preserves overlapping cells and their protection, centered in the new dimensions. Music still uses 32 × 32 regions. Playback and Conway pause when the page is hidden, and require Play on return. The fixed toolbar fits its labeled Slow (30 BPM), Fast (90 BPM), Stabby, and Smooth controls; Smooth is the default. A black BLIIII…PS title fills the toolbar width and inverts over live cells.
 
 Stereo now eases toward center over the first and last four column intervals. Columns 0 and 31 both sit at center, softening the wrap without reversing the sequence or fading note volume.
+
+Pencil is selected on load. Each stroke starts with 16 generations of protection and adds one generation for every three fine cells traveled, so a paused stroke releases from its beginning toward its end. Each new stroke restarts the progression; erasing still removes cells and protection immediately. Protection expiry allows Conway rules to resume, rather than forcing cells to die.

@@ -5,6 +5,15 @@ export class Life {
  step(){const n=this.size,a=this.cells,b=this.next;for(let y=0;y<this.height;y++){const up=((y+this.height-1)%this.height)*n,down=((y+1)%this.height)*n,row=y*n;for(let x=0;x<n;x++){const index=row+x;if(this.protection[index]>0){b[index]=1;this.protection[index]--;continue;}const l=(x+n-1)%n,r=(x+1)%n;const count=a[up+l]+a[up+x]+a[up+r]+a[row+l]+a[row+r]+a[down+l]+a[down+x]+a[down+r];b[row+x]=+(count===3||(count===2&&a[row+x]===1));}}this.cells=b;this.next=a;this.generation++;}
  resize(width,height){const oldWidth=this.size,oldHeight=this.height,cells=this.cells,protection=this.protection;this.size=width;this.height=height;this.cells=new Uint8Array(width*height);this.next=new Uint8Array(width*height);this.protection=new Uint16Array(width*height);const dx=Math.floor((width-oldWidth)/2),dy=Math.floor((height-oldHeight)/2);for(let y=0;y<oldHeight;y++)for(let x=0;x<oldWidth;x++){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<width&&yy>=0&&yy<height){this.cells[yy*width+xx]=cells[y*oldWidth+x];this.protection[yy*width+xx]=protection[y*oldWidth+x];}}}
  density(){const counts=new Uint16Array(1024);for(let y=0;y<this.height;y++)for(let x=0;x<this.size;x++)counts[Math.floor(y/this.height*32)*32+Math.floor(x/this.size*32)]+=this.cells[y*this.size+x];return counts;}
+ beginStroke(){this.strokeDistance=0;this.strokeLast=null;}
+ paintStroke(points,value){
+  if(this.strokeDistance===undefined)this.beginStroke();
+  for(const point of points){
+   if(this.strokeLast)this.strokeDistance+=Math.hypot(point[0]-this.strokeLast[0],point[1]-this.strokeLast[1]);
+   const lifetime=PENCIL_LIFETIME+Math.floor(this.strokeDistance/3);
+   this.paint([point],value,lifetime);this.strokeLast=point;
+  }
+ }
  paint(points,value,iterations=PENCIL_LIFETIME){const lifetime=Number.isFinite(iterations)?Math.max(0,Math.min(1000,Math.floor(iterations))):0;for(const [x,y] of points)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<this.size&&yy>=0&&yy<this.height){const i=yy*this.size+xx;this.cells[i]=value;this.protection[i]=value?lifetime:0;}}}
  clear(){this.cells.fill(0);this.next.fill(0);this.protection.fill(0);this.generation=0;}
  loadText(cells,overlay=false,lifetimes=null){if(!overlay)this.clear();for(let i=0;i<this.cells.length;i++)if(cells[i]){this.cells[i]=1;this.protection[i]=lifetimes instanceof Uint16Array&&lifetimes.length===cells.length?lifetimes[i]:PENCIL_LIFETIME;}}

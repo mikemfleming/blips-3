@@ -78,3 +78,15 @@ test('rectangular grids wrap, aggregate, and preserve protected cells when resiz
  assert.equal(life.cells[26*96+36],1);assert.equal(life.protection[26*96+36],16);
  assert.equal(life.generation,0);
 });
+
+
+test('paused pencil strokes gain protection in drawing order, independent of event batching',()=>{
+ const life=new Life(32);life.beginStroke();life.paintStroke([[5,5],[11,5],[17,5]],1);
+ assert.equal(life.protection[5*32+5],16);assert.equal(life.protection[5*32+11],18);assert.equal(life.protection[5*32+17],20);
+ const batched=new Life(32);batched.beginStroke();batched.paintStroke([[5,5]],1);batched.paintStroke([[11,5],[17,5]],1);
+ assert.deepEqual(life.protection,batched.protection);
+ for(let i=0;i<16;i++)life.step();
+ assert.equal(life.protection[5*32+5],0);assert.equal(life.protection[5*32+17],4);
+ life.beginStroke();life.paintStroke([[25,25]],1);assert.equal(life.protection[25*32+25],16);
+ life.paintStroke([[17,5]],0);assert.equal(life.protection[5*32+17],0);assert.equal(life.cells[5*32+17],0);
+});
