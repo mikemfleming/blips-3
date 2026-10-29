@@ -24,7 +24,7 @@ window.audioTests=(async()=>{
  }
  const ctx=new OfflineAudioContext(2,48000*2,48000),engine=new AudioEngine();
  engine.ctx=ctx;Object.assign(engine,createAudioGraph(ctx));engine.mode='swell';engine.density.fill(256);
- engine.scheduleStep(.04,0);engine.scheduleStep(1.04,31);
+ engine.scheduleStep(.04,4);engine.scheduleStep(1.04,27);
  const buffer=await ctx.startRendering();
  const rms=(channel,start,end)=>{
   const samples=buffer.getChannelData(channel);let sum=0;

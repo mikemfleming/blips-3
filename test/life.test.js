@@ -2,7 +2,7 @@ import {test} from 'node:test';import assert from 'node:assert/strict';import {L
 test('block remains stable and blinker has period two',()=>{const l=new Life(64);l.stamp(patterns.Block,8,8);l.stamp(patterns.Blinker,20,20);const a=l.cells.slice();l.step();assert.equal(l.cells[19*64+21],1);assert.equal(l.cells[20*64+20],0);l.step();assert.deepEqual(l.cells,a);});
 test('wrapping corners count as neighbors',()=>{const l=new Life(32);l.cells[31*32+31]=l.cells[31*32]=l.cells[31]=1;l.step();assert.equal(l.cells[0],1);});
 test('512 grid aggregates into 32 square music regions',()=>{const l=new Life();l.cells.fill(1);assert.equal(l.density().length,1024);assert.ok(l.density().every(n=>n===256));l.cells.fill(0);l.cells[16*512+16]=1;assert.equal(l.density()[33],1);});
-test('volume silence, soft onset, saturation and pitch range',()=>{assert.equal(level(0,32),0);assert.ok(level(1,32)>0&&level(1,32)<.1);assert.equal(level(32,32),1);assert.equal(level(256,32),1);assert.equal(pitches.length,32);assert.equal(pitches[0],84);assert.equal(pitches[31],48);});
+test('volume silence, soft onset, saturation and pitch range',()=>{assert.equal(level(0,32),0);assert.ok(level(1,32)>0&&level(1,32)<.1);assert.equal(level(32,32),1);assert.equal(level(256,32),1);assert.equal(pitches.length,32);assert.equal(pitches[0],94);assert.equal(pitches[31],60);});
 import {AudioEngine} from '../src/audio.js';
 function engine(){const a=new AudioEngine();a.ctx={currentTime:0};a.next=.04;a.voices=Array.from({length:32},()=>{const calls=[];return {calls,cancelScheduledValues:t=>calls.push(['cancel',t]),cancelAndHoldAtTime:t=>calls.push(['hold',t]),setValueAtTime:(v,t)=>calls.push(['set',v,t]),linearRampToValueAtTime:(v,t)=>calls.push(['ramp',v,t]),exponentialRampToValueAtTime:(v,t)=>calls.push(['decay',v,t]),setTargetAtTime:(v,t,c)=>calls.push(['target',v,t,c])};});return a;}
 test('trigger articulates and schedules visual events on audio time',()=>{const a=engine();a.mode='trigger';a.density[0]=32;a.schedule();assert.deepEqual(a.events,[{time:.04,column:0}]);assert.ok(a.voices[0].calls.some(c=>c[0]==='ramp'&&c[1]===1));assert.ok(a.voices[0].calls.some(c=>c[0]==='decay'));});
@@ -89,4 +89,12 @@ test('paused pencil strokes gain protection in drawing order, independent of eve
  assert.equal(life.protection[5*32+5],0);assert.equal(life.protection[5*32+17],4);
  life.beginStroke();life.paintStroke([[25,25]],1);assert.equal(life.protection[25*32+25],16);
  life.paintStroke([[17,5]],0);assert.equal(life.protection[5*32+17],0);assert.equal(life.cells[5*32+17],0);
+});
+
+
+test('12 Cm7 pitches span C4 to Bb6 across 32 rows',()=>{
+ assert.equal(pitches.length,32);assert.equal(new Set(pitches).size,12);
+ assert.deepEqual([...new Set(pitches.map(note=>note%12))].sort((a,b)=>a-b),[0,3,7,10]);
+ for(let i=1;i<32;i++)assert.ok(pitches[i]<=pitches[i-1]);
+ assert.equal(pitches[0],94);assert.equal(pitches[31],60);
 });

@@ -36,7 +36,7 @@ The renderer caches a fine-cell bitmap on a neutral background. Live cells in th
 
 Audio uses Web Audio triangle voices, density envelopes, a gentle 3.5 kHz low-pass filter, and fixed spatial positioning. The experimental delay and phase processors and their UI have been removed. Stereo always follows Blips 2's HRTF spatial model at 66% width: lateral coordinates run from x = -1.32 to +1.32, y = 0, z = -1.5, with rolloffFactor = 0. The former 66% width blend is fixed at 34% direct signal and 66% spatial signal. There is no free-running stereo oscillator. Positions are scheduled on the audio clock and settle over 15 ms; pausing clears pending positions and returns the source to center.
 
-The original descending C-major pentatonic C6–C3 mapping is expanded to 32 pitch rows by repeating each pitch twice, preserving its range. This recreates the core timbre without carrying the old Tone.js dependency; it is not a bit-identical reproduction of Tone's synth.
+The 32 rows share 12 distinct Cm7 pitches (C, E♭, G, B♭) across three octaves, with some adjacent rows repeating a pitch: B♭6 at the top through C4 at the bottom. This recreates the core timbre without carrying the old Tone.js dependency; it is not a bit-identical reproduction of Tone's synth.
 
 The audio clock schedules 100 ms ahead every 20 ms; animation reads timestamped playhead events. Tempo and mode changes take effect within that look-ahead window. Expired steps are skipped after scheduling stalls to avoid catch-up bursts. Pause and mode changes hold the current envelope before fading. Browser background throttling can affect prolonged hidden-tab playback. Mobile Safari and physical device audio have not been verified.
 

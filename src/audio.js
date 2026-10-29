@@ -1,8 +1,10 @@
-// Same descending C-major pentatonic range as Blips 2, extended to 32 rows.
-export const pitches = Array.from({ length: 32 }, (_, i) =>
-  [84,81,79,76,74,72,69,67,64,62,60,57,55,52,50,48][Math.floor(i / 2)]);
+// 12 Cm7 pitches from C4 through Bb6, distributed across 32 rows.
+export const pitches=Array.from({length:32},(_,row)=>{
+ const index=11-Math.round(row*11/31);
+ return 60+12*Math.floor(index/4)+[0,3,7,10][index%4];
+});
 export const level = (count, peak) => count === 0 ? 0 : .035 + .965 * Math.min(1, count / peak);
-export const MIX_GAIN = .018;
+export const MIX_GAIN = .014;
 export const STEREO_WIDTH=.66;
 // Ease the first/last four column intervals to center so both ends meet.
 export const spatialX=column=>{
@@ -17,7 +19,7 @@ export function createAudioGraph(ctx) {
   spatial.positionX.value=0;spatial.positionY.value=0;spatial.positionZ.value=-1.5;
   const direct=ctx.createGain(),positioned=ctx.createGain();
   direct.gain.value=1-STEREO_WIDTH;positioned.gain.value=STEREO_WIDTH;
-  const tone=ctx.createBiquadFilter();tone.type='lowpass';tone.frequency.value=3500;tone.Q.value=.5;
+  const tone=ctx.createBiquadFilter();tone.type='lowpass';tone.frequency.value=2200;tone.Q.value=.5;
   // Preserve the former 66% Width setting, without any experimental processors.
   master.connect(direct);direct.connect(tone);
   master.connect(spatial);spatial.connect(positioned);positioned.connect(tone);
