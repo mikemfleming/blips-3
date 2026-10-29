@@ -17,7 +17,7 @@ nav {
   width: 100%; display: flex; align-items: center; justify-content: center; flex-wrap: nowrap;
   gap: .5rem; padding: .4rem;
   border: 1px solid #e5e5e5; border-radius: .75rem;
-  background: #fafafad9; box-shadow: 0 3px 16px #0001;
+  background: #fafafa80; box-shadow: 0 3px 16px #0001;
   container-type: inline-size;
 }
 button {
