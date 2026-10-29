@@ -9,7 +9,7 @@
 </head>
 <body>
   <header>
-    <h1>Blips</h1>
+    <h1 aria-label="Blips"><span aria-hidden="true">BLIPS</span></h1>
     <nav aria-label="Playback and composition">
       <div class="toolbar-tools">
       <button id="play" aria-label="Play" aria-keyshortcuts="Space" title="Play / pause (Space)">▶</button>
@@ -27,15 +27,15 @@
         <div class="speed-control" role="group" aria-label="Speed">
           <span class="control-label">Speed</span>
           <div class="segmented speed-toggle">
-            <button id="tortoise" aria-label="Tortoise" aria-pressed="false" title="Tortoise — 30 BPM"><span class="speed-icon" aria-hidden="true">🐢</span><span class="speed-name">Tortoise</span></button>
-            <button id="hare" aria-label="Hare" aria-pressed="true" title="Hare — 90 BPM"><span class="speed-icon" aria-hidden="true">🐇</span><span class="speed-name">Hare</span></button>
+            <button id="tortoise" aria-label="Slow" aria-pressed="false" title="Slow — 30 BPM">Slow</button>
+            <button id="hare" aria-label="Fast" aria-pressed="true" title="Fast — 90 BPM">Fast</button>
           </div>
         </div>
         <div class="sound-control" role="group" aria-label="Sound">
           <span class="control-label">Sound</span>
           <div class="segmented sound-toggle">
-            <button id="trigger" aria-pressed="true" title="Separate notes on each step; density controls volume">Stabby</button>
-            <button id="swell" aria-pressed="false" title="Hold notes across adjacent active steps with smooth volume changes">Smooth</button>
+            <button id="trigger" aria-label="Stabby" aria-pressed="false" title="Stabby — separate notes on each step; density controls volume">Stabby</button>
+            <button id="swell" aria-label="Smooth" aria-pressed="true" title="Smooth — hold notes across adjacent active steps with smooth volume changes">Smooth</button>
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@
   <dialog id="about-dialog">
     <form method="dialog"><button aria-label="Close About">×</button></form>
     <h2>Blips</h2>
-    <p>A living instrument. Conway’s Game of Life unfolds on 512 × 512 cells. Invisible 32 × 32 music regions turn their density into sound.</p>
+    <p>A living instrument. Conway’s Game of Life unfolds on a rectangular grid of square cells that fits your screen. Invisible 32 × 32 music regions turn their density into sound.</p>
     <p>Play scans left to right in sixteenth notes. Stabby articulates each step; Smooth joins neighboring active steps in the same pitch row. Stereo follows the scanner at a fixed 66% width. Edges wrap around. Tortoise is 30 BPM; Hare is 90 BPM.</p>
     <p>Select the pencil to draw or erase with a 3-cell-wide stroke, even while playing. Drawn cells stay alive for 16 Conway generations, then resume normal rules. Erasing and clearing remove them immediately. Random gives every cell an independent 50% chance of life. The trash button clears the grid. Space toggles playback.</p>
     <p>The playhead moves every sixteenth note. Conway evolves independently at roughly the same interval; the canvas shows each completed generation on the next screen refresh. The rainbow redraws at display refresh while playing. Generations do not wait for the end of a sweep.</p>

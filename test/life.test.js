@@ -68,3 +68,13 @@ test('text cells with longer character lifetimes remain protected after earlier 
  life.loadText(mask,false,lifetimes);
  for(let i=1;i<=21;i++){life.step();assert.equal(life.cells[first],i<=16?1:0);assert.equal(life.cells[last],i<=20?1:0);}
 });
+
+test('rectangular grids wrap, aggregate, and preserve protected cells when resized',()=>{
+ const life=new Life(64,32);
+ life.stamp(['OOO'],63,31);life.step();
+ assert.equal(life.cells[30*64],1);assert.equal(life.cells[31*64],1);assert.equal(life.cells[0],1);
+ assert.equal(life.density().reduce((a,b)=>a+b,0),3);
+ life.clear();life.paint([[20,10]],1);life.resize(96,64);
+ assert.equal(life.cells[26*96+36],1);assert.equal(life.protection[26*96+36],16);
+ assert.equal(life.generation,0);
+});

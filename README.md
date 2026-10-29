@@ -24,7 +24,7 @@ npm run benchmark
 - Pencil: draw while playing or paused with a 3 × 3 fine-cell brush. Drawn cells stay alive for the next 16 completed Conway generations, then return to normal Conway rules. They are not forcibly killed after protection expires. Painting over a cell refreshes protection; erasing, clearing, and randomizing remove protection immediately. Pausing does not consume generations. Playback keeps the pencil selected; Escape deselects it.
 - Random assigns each of the 262,144 cells an independent 50% chance of life.
 - Clear (trash button) empties the grid and resets its iteration count, whether playing or paused.
-- Sound is a Stabby / Smooth toggle directly in the toolbar, defaulting to Stabby. Stabby articulates every step; Smooth holds each pitch-row voice across adjacent active columns, interpolates volume, and fades on an empty region.
+- Sound is a Stabby / Smooth toggle directly in the toolbar, defaulting to Smooth. Stabby articulates every step; Smooth holds each pitch-row voice across adjacent active columns, interpolates volume, and fades on an empty region.
 - Volume follows density automatically, with a fixed full-volume threshold of 32 cells per region.
 - Spatial audio always follows the scanner at a fixed 66% width, using the spatial model from Blips 2.
 
@@ -72,7 +72,7 @@ All options are independent and combine in the same URL. Every link starts pause
 - `text=Hello%20world` adds centered text as live cells. Visible characters receive increasing protection in reading order: 16 generations for the first, 17 for the second, 18 for the third, and so on (+1 per character). Spaces do not count, and new lines continue the sequence. Combined Unicode characters count as one visible character. Each cell resumes normal Conway rules when its own protection expires. Erasing, clearing, or randomizing removes protection immediately.
 - `density=10` creates a fresh random background with a 10% chance of life per cell. Reloading creates a new layout. Values may be fractional and are clamped to 0–100; an empty or invalid density value uses 50%. `density=0` makes an empty background; `density=100` fills it. The total live count includes any added text, so it may exceed the background percentage.
 - `speed=tortoise` (30 BPM) or `speed=hare` (90 BPM, default).
-- `sound=stabby` (default) or `sound=smooth`.
+- `sound=stabby` or `sound=smooth` (default).
 
 Examples:
 
@@ -87,3 +87,7 @@ With text alone, the rest of the grid starts empty. With density alone, the grid
 Seed support has been removed; old `seed` parameters are ignored. Random continues to generate a fresh grid with 50% live-cell probability. Unknown speed/sound values use their defaults, and toolbar changes can override the initial settings.
 
 Desktop/mobile checks cover text-only, density-only, combined initialization, centered text, fresh backgrounds, density endpoints, and character-specific protection/expiry through their assigned generation counts. Unit checks cover parsing, binary cell extraction, probability selection, and preservation of background cells when text is overlaid.
+
+## October 28 interface update
+
+The grid fills the viewport with square cells in a responsive rectangular simulation. Resizing preserves overlapping cells and their protection, centered in the new dimensions. Music still uses 32 × 32 regions. Playback and Conway pause when the page is hidden, and require Play on return. The fixed toolbar fits its labeled Slow (30 BPM), Fast (90 BPM), Stabby, and Smooth controls; Smooth is the default. A black BLIIII…PS title fills the toolbar width and inverts over live cells.

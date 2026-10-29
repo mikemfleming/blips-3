@@ -17,7 +17,7 @@ nav {
   width: 100%; display: flex; align-items: center; justify-content: center; flex-wrap: nowrap;
   gap: .5rem; padding: .4rem;
   border: 1px solid #e5e5e5; border-radius: .75rem;
-  background: #fafafaf2; box-shadow: 0 3px 16px #0001;
+  background: #fafafad9; box-shadow: 0 3px 16px #0001;
   container-type: inline-size;
 }
 button {
@@ -88,3 +88,44 @@ dialog h2 { margin-top: 0; }
 
 
 @media (max-width: 360px) { nav { gap: .1rem; } }
+
+/* The instrument fills the viewport, with controls floating above the cells. */
+body { height: 100dvh; min-height: 0; padding: 0; overflow: hidden; }
+main { position: fixed; inset: 0; width: 100%; max-width: none; margin: 0; padding: 0; }
+#grid { width: 100%; height: 100%; aspect-ratio: auto; }
+header {
+  position: fixed; z-index: 1;
+  top: max(env(safe-area-inset-top, 0px), .75rem); left: .75rem; right: .75rem;
+  width: auto; max-width: none; padding: 0; gap: .5rem;
+  pointer-events: none;
+}
+h1 { align-self: flex-start; padding: .15rem .4rem; border-radius: .35rem; background: #fafafa; }
+nav { width: min(100%, 42rem); align-self: center; pointer-events: auto; }
+footer {
+  position: fixed; z-index: 1; bottom: 0; left: .75rem; right: .75rem;
+  padding: .25rem .4rem max(env(safe-area-inset-bottom, 0px), .25rem);
+  background: #fafafa80; border-radius: .35rem .35rem 0 0;
+  pointer-events: none;
+}
+#about { pointer-events: auto; }
+
+/* Fit the toolbar to its labeled controls without stretching the background. */
+header { left: .75rem; right: .75rem; width: auto; max-width: none; gap: .5rem; }
+nav { width: fit-content; max-width: 100%; align-self: center; container-type: normal; }
+.speed-control, .sound-control { width: auto; flex: 0 0 auto; }
+@media (max-width: 600px) {
+  .toolbar-tools { gap: 0; }
+  .toolbar-tools button { width: 1.75rem; min-width: 1.75rem; padding: 0; }
+  #random span { display: none; }
+  .segmented button { font-size: .7rem; padding-inline: .25rem; }
+}
+@media (max-width: 360px) {
+  nav { gap: .15rem; padding-inline: .15rem; }
+  .toolbar-tools button { width: 1.5rem; min-width: 1.5rem; }
+  .segmented button { font-size: .65rem; padding-inline: .15rem; }
+}
+
+header { left: 50%; right: auto; transform: translateX(-50%); width: max-content; max-width: calc(100% - 24px); }
+nav { width: auto; }
+h1 { width: 100%; height: 38px; padding: 0; background: transparent; border-radius: 0; overflow: hidden; }
+h1 span { visibility: hidden; }

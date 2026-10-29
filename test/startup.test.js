@@ -2,13 +2,14 @@ import {test} from 'node:test';import assert from 'node:assert/strict';
 import {parseStartupOptions} from '../src/startup.js';
 import {Life} from '../src/life.js';
 test('startup modes retain defaults and ignore obsolete seed parameters',()=>{
- assert.deepEqual(parseStartupOptions(''),{speed:'hare',sound:'stabby',text:null,density:null});
+ assert.deepEqual(parseStartupOptions(''),{speed:'hare',sound:'smooth',text:null,density:null});
  assert.deepEqual(parseStartupOptions('?speed=tortoise&sound=smooth&seed=lauren'),{speed:'tortoise',sound:'smooth',text:null,density:null});
+ assert.equal(parseStartupOptions('?sound=stabby').sound,'stabby');
  assert.equal(parseStartupOptions('?speed=__proto__&sound=constructor').speed,'hare');
- assert.equal(parseStartupOptions('?speed=turbo&sound=swell').sound,'stabby');
+ assert.equal(parseStartupOptions('?speed=turbo&sound=swell').sound,'smooth');
 });
 test('text and density are parsed independently, including Unicode and empty text',()=>{
- assert.deepEqual(parseStartupOptions('?text=caf%C3%A9+%F0%9F%8C%B1&density=10'),{speed:'hare',sound:'stabby',text:'café 🌱',density:10});
+ assert.deepEqual(parseStartupOptions('?text=caf%C3%A9+%F0%9F%8C%B1&density=10'),{speed:'hare',sound:'smooth',text:'café 🌱',density:10});
  assert.equal(parseStartupOptions('?text=&density=10').text,'');
  assert.equal(parseStartupOptions('?text=Hello').density,null);
 });
